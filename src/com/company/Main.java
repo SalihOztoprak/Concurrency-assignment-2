@@ -12,13 +12,17 @@ public class Main {
     }
 
     public void run(){
-        disco = new Disco();
-        for (int i = 1; i <21 ; i++) {
-            persons.add(new Person(i,disco));
-        }
-        for (int i = 1; i <4 ; i++) {
-            recordCompanies.add(new RecordCompany(i,disco));
-        }
+        persons = new ArrayList<>();
+        recordCompanies = new ArrayList<>();
 
+        disco = new Disco();
+        for (int i = 0; i <20 ; i++) {
+            persons.add(new Person(i,disco));
+            persons.get(i).start();
+        }
+        for (int i = 0; i <3 ; i++) {
+            recordCompanies.add(new RecordCompany(i,disco));
+            recordCompanies.get(i).start();
+        }
     }
 }
