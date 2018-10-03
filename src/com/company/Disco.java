@@ -34,7 +34,7 @@ public class Disco {
     private void enterVistor() {
         reentrantLock.lock();
         try {
-            while (discoFull(20)) {
+            while (discoFull()) {
                 discoIsFull.await();
             }
         } catch (InterruptedException e) {
@@ -45,28 +45,28 @@ public class Disco {
     }
 
     private void exitVistor() {
-        try {
-            reentrantLock.lock();
-            discoIsFull.signal();
-        } finally {
-            reentrantLock.unlock();
-        }
+        reentrantLock.lock();
+        discoIsFull.signal();
+        reentrantLock.unlock();
     }
 
     private void enterRecordCompany() {
-        reentrantLock.lock();
-        while (canRecordCompanyEnter(10) && !containsRecordCompany) {
-            containsRecordCompany = true;
-            lockDisco();
+        while (!containsRecordCompany) {
+            reentrantLock.lock();
+            if (canRecordCompanyEnter()) {
+                containsRecordCompany = true;
+            }
         }
+        lockDisco();
+        containsRecordCompany = false;
     }
 
-    private boolean discoFull(int amount) {
-        return discoCounter == amount;
+    private boolean discoFull() {
+        return discoCounter == 20;
     }
 
-    private boolean canRecordCompanyEnter(int amount) {
-        return discoCounter <= amount;
+    private boolean canRecordCompanyEnter() {
+        return discoCounter <= 10;
     }
 
     private void exitRecordCompany() {

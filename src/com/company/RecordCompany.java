@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class RecordCompany extends Thread {
     private int number;
-    private Disco  disco;
+    private Disco disco;
 
     public RecordCompany(int number, Disco disco) {
         this.number = number+1;

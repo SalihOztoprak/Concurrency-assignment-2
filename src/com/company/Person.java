@@ -16,7 +16,7 @@ public class Person extends  Thread{
         System.out.println("Someone entered: " + personNumber);
         disco.enterDisco();
         Random random = new Random();
-        int time = random.nextInt(2) + 10;
+        int time = random.nextInt(2) + 30;
         try {
             sleep(time * 1000);
         } catch (InterruptedException e) {
