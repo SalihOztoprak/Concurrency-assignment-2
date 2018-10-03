@@ -10,6 +10,9 @@ public class Disco {
     private static int discoCounter;
     private static boolean containsRecordCompany;
 
+    /**
+     *
+     */
     public void enterDisco() {
         Thread t = Thread.currentThread();
         if (t instanceof RecordCompany) {
@@ -20,6 +23,9 @@ public class Disco {
         }
     }
 
+    /**
+     *
+     */
     public void exitDisco() {
         Thread t = Thread.currentThread();
         if (t instanceof RecordCompany) {
@@ -30,7 +36,9 @@ public class Disco {
         }
     }
 
-
+    /**
+     *
+     */
     private void enterVistor() {
         reentrantLock.lock();
         try {
@@ -44,12 +52,18 @@ public class Disco {
         }
     }
 
+    /**
+     *
+     */
     private void exitVistor() {
         reentrantLock.lock();
         discoIsFull.signal();
         reentrantLock.unlock();
     }
 
+    /**
+     *
+     */
     private void enterRecordCompany() {
         while (!containsRecordCompany) {
             reentrantLock.lock();
@@ -61,19 +75,33 @@ public class Disco {
         containsRecordCompany = false;
     }
 
+    /**
+     *
+     * @return
+     */
     private boolean discoFull() {
         return discoCounter == 20;
     }
 
+    /**
+     *
+     * @return
+     */
     private boolean canRecordCompanyEnter() {
         return discoCounter <= 10;
     }
 
+    /**
+     *
+     */
     private void exitRecordCompany() {
         reentrantLock.unlock();
         containsRecordCompany = false;
     }
 
+    /**
+     * 
+     */
     private void lockDisco() {
         try {
             discoIsFull.await();
