@@ -7,9 +7,12 @@ public class Disco {
 
     private ReentrantLock reentrantLock = new ReentrantLock();
     private Condition discoIsFull = reentrantLock.newCondition();
-    private int discoCounter;
-    private boolean containsRecordCompany;
+    private static int discoCounter;
+    private static boolean containsRecordCompany;
 
+    /**
+     *
+     */
     public void enterDisco() {
         Thread t = Thread.currentThread();
         if (t instanceof RecordCompany) {
@@ -20,6 +23,9 @@ public class Disco {
         }
     }
 
+    /**
+     *
+     */
     public void exitDisco() {
         Thread t = Thread.currentThread();
         if (t instanceof RecordCompany) {
@@ -30,11 +36,13 @@ public class Disco {
         }
     }
 
-
+    /**
+     *
+     */
     private void enterVistor() {
         reentrantLock.lock();
         try {
-            while (discoFull(20)) {
+            while (discoFull()) {
                 discoIsFull.await();
             }
         } catch (InterruptedException e) {
@@ -44,36 +52,56 @@ public class Disco {
         }
     }
 
+    /**
+     *
+     */
     private void exitVistor() {
-        try {
-            reentrantLock.lock();
-            discoIsFull.signal();
-        } finally {
-            reentrantLock.unlock();
-        }
-    }
-
-    private void enterRecordCompany() {
         reentrantLock.lock();
-        while (canRecordCompanyEnter(10) && !containsRecordCompany) {
-            containsRecordCompany = true;
-            lockDisco();
+        discoIsFull.signal();
+        reentrantLock.unlock();
+    }
+
+    /**
+     *
+     */
+    private void enterRecordCompany() {
+        while (!containsRecordCompany) {
+            reentrantLock.lock();
+            if (canRecordCompanyEnter()) {
+                containsRecordCompany = true;
+            }
         }
+        lockDisco();
+        containsRecordCompany = false;
     }
 
-    private boolean discoFull(int amount) {
-        return discoCounter == amount;
+    /**
+     *
+     * @return
+     */
+    private boolean discoFull() {
+        return discoCounter == 20;
     }
 
-    private boolean canRecordCompanyEnter(int amount) {
-        return discoCounter <= amount;
+    /**
+     *
+     * @return
+     */
+    private boolean canRecordCompanyEnter() {
+        return discoCounter <= 10;
     }
 
+    /**
+     *
+     */
     private void exitRecordCompany() {
         reentrantLock.unlock();
         containsRecordCompany = false;
     }
 
+    /**
+     * 
+     */
     private void lockDisco() {
         try {
             discoIsFull.await();
