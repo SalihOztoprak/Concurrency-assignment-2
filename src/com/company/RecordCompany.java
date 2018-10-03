@@ -3,7 +3,6 @@ package com.company;
 import java.util.Random;
 
 public class RecordCompany extends Thread {
-    private String name;
     private int number;
     private Disco disco;
 
