@@ -7,8 +7,8 @@ public class Disco {
 
     private ReentrantLock reentrantLock = new ReentrantLock();
     private Condition discoIsFull = reentrantLock.newCondition();
-    private int discoCounter;
-    private boolean containsRecordCompany;
+    private static int discoCounter;
+    private static boolean containsRecordCompany;
 
     public void enterDisco() {
         Thread t = Thread.currentThread();
@@ -34,7 +34,7 @@ public class Disco {
     private void enterVistor() {
         reentrantLock.lock();
         try {
-            while (discoFull(20)) {
+            while (discoFull()) {
                 discoIsFull.await();
             }
         } catch (InterruptedException e) {
@@ -51,19 +51,22 @@ public class Disco {
     }
 
     private void enterRecordCompany() {
-        while (canRecordCompanyEnter(10) && !containsRecordCompany) {
+        while (!containsRecordCompany) {
             reentrantLock.lock();
-            containsRecordCompany = true;
-            lockDisco();
+            if (canRecordCompanyEnter()) {
+                containsRecordCompany = true;
+            }
         }
+        lockDisco();
+        containsRecordCompany = false;
     }
 
-    private boolean discoFull(int amount) {
-        return discoCounter == amount;
+    private boolean discoFull() {
+        return discoCounter == 20;
     }
 
-    private boolean canRecordCompanyEnter(int amount) {
-        return discoCounter <= amount;
+    private boolean canRecordCompanyEnter() {
+        return discoCounter <= 10;
     }
 
     private void exitRecordCompany() {

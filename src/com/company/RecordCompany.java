@@ -5,7 +5,7 @@ import java.util.Random;
 public class RecordCompany extends Thread {
     private String name;
     private int number;
-    private Disco  disco;
+    private Disco disco;
 
     public RecordCompany(int number, Disco disco) {
         this.number = number+1;
@@ -14,8 +14,8 @@ public class RecordCompany extends Thread {
 
     @Override
     public void run() {
-        System.out.println("Someone important entered: " + number);
         disco.enterDisco();
+        System.out.println("Someone important entered: " + number);
         Random random = new Random();
         int time = random.nextInt(2) + 10;
         try {
