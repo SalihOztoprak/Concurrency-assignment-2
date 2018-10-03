@@ -3,7 +3,7 @@ package com.company;
 import java.util.Random;
 
 public class RecordCompany extends Thread {
-    private int number;
+    private  int number;
     private Disco disco;
 
     public RecordCompany(int number, Disco disco) {
@@ -13,16 +13,20 @@ public class RecordCompany extends Thread {
 
     @Override
     public void run() {
-        disco.enterDisco();
-        System.out.println("Someone important entered: " + number);
-        Random random = new Random();
-        int time = random.nextInt(2) + 10;
-        try {
-            sleep(time*1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.out.println("Someone important left: " + number);
+//        while (true) {
+            disco.enterDisco();
+            System.out.println("Someone important entered: " + number);
+            Random random = new Random();
+            int time = random.nextInt(10) + 2;
+            try {
+                sleep(time * 1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            disco.exitDisco(this);
+            System.out.println("Someone important left: " + number);
+//            number++;
+//        }
     }
 
     @Override
