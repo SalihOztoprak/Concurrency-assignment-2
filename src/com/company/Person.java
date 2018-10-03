@@ -13,25 +13,31 @@ public class Person extends  Thread{
 
     @Override
     public void run() {
-//        while (true) {
-            System.out.println("Person : " + personNumber+" entered");
+        while (true) {
+            waitSomeTime();
             disco.enterDisco();
-            Random random = new Random();
-            int time = random.nextInt(10) + 2;
-            try {
-                sleep(time * 1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            System.out.println("Person : " + personNumber+" entered");
+
+            waitSomeTime();
             disco.exitDisco(this);
             System.out.println("Person : " + personNumber+" left");
 //            personNumber++;
-//        }
+        }
     }
 
     @Override
     public String toString() {
         return "Person: "+ personNumber;
+    }
+
+    private void waitSomeTime(){
+        Random random = new Random();
+        int time = random.nextInt(60) + 1;
+        try {
+            sleep(time * 1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 }

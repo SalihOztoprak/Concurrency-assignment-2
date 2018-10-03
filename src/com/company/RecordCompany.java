@@ -13,24 +13,30 @@ public class RecordCompany extends Thread {
 
     @Override
     public void run() {
-//        while (true) {
+        while (true) {
+            waitSomeTime();
             disco.enterDisco();
             System.out.println("Someone important entered: " + number);
-            Random random = new Random();
-            int time = random.nextInt(10) + 2;
-            try {
-                sleep(time * 1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+
+            waitSomeTime();
             disco.exitDisco(this);
             System.out.println("Someone important left: " + number);
 //            number++;
-//        }
+        }
     }
 
     @Override
     public String toString() {
         return "RecordCompany: "+ number;
+    }
+
+    private void waitSomeTime(){
+        Random random = new Random();
+        int time = random.nextInt(60) + 1;
+        try {
+            sleep(time * 1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
