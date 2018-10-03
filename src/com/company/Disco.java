@@ -5,7 +5,7 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class Disco {
 
-    private ReentrantLock reentrantLock = new ReentrantLock();
+    private final ReentrantLock reentrantLock = new ReentrantLock();
     private Condition discoIsFull = reentrantLock.newCondition();
     private static int discoCounter;
     private static boolean containsRecordCompany;
@@ -65,14 +65,17 @@ public class Disco {
      *
      */
     private void enterRecordCompany() {
-        while (!containsRecordCompany) {
-            reentrantLock.lock();
-            if (canRecordCompanyEnter()) {
-                containsRecordCompany = true;
+        synchronized (reentrantLock) {
+            while (!containsRecordCompany) {
+                reentrantLock.lock();
+                if (canRecordCompanyEnter()) {
+                    containsRecordCompany = true;
+                }
             }
+            reentrantLock.notifyAll();
+            lockDisco();
+            containsRecordCompany = false;
         }
-        lockDisco();
-        containsRecordCompany = false;
     }
 
     /**
@@ -100,7 +103,7 @@ public class Disco {
     }
 
     /**
-     * 
+     *
      */
     private void lockDisco() {
         try {
