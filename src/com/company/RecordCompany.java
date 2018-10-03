@@ -13,8 +13,8 @@ public class RecordCompany extends Thread {
 
     @Override
     public void run() {
-        System.out.println("Someone important entered: " + number);
         disco.enterDisco();
+        System.out.println("Someone important entered: " + number);
         Random random = new Random();
         int time = random.nextInt(2) + 10;
         try {
