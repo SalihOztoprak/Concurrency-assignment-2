@@ -5,8 +5,11 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class Disco {
 
-    private ReentrantLock reentrantLock = new ReentrantLock();
-    private Condition discoIsFull = reentrantLock.newCondition();
+    private ReentrantLock reentrantLockVisitor = new ReentrantLock();
+    private ReentrantLock reentrantLockRC = new ReentrantLock();
+    private Condition discoIsFull = reentrantLockVisitor.newCondition();
+    private Condition rcInDisco = reentrantLockRC.newCondition();
+
     private static int discoCounter;
     private static boolean containsRecordCompany;
 
@@ -19,28 +22,33 @@ public class Disco {
             enterRecordCompany();
         } else {
             discoCounter++;
-            enterVistor();
+            enterVisitor();
         }
     }
 
     /**
      *
      */
-    public void exitDisco() {
+    public void exitDisco(Object object) {
         Thread t = Thread.currentThread();
+
         if (t instanceof RecordCompany) {
             exitRecordCompany();
         } else {
+            if (object instanceof Person) {
+                exitVisitor();
+            } else {
+                exitRecordCompany();
+            }
             discoCounter--;
-            exitVistor();
         }
     }
 
     /**
      *
      */
-    private void enterVistor() {
-        reentrantLock.lock();
+    private void enterVisitor() {
+        reentrantLockVisitor.lock();
         try {
             while (discoFull()) {
                 discoIsFull.await();
@@ -48,59 +56,62 @@ public class Disco {
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
-            reentrantLock.unlock();
+            reentrantLockVisitor.unlock();
         }
     }
 
     /**
      *
      */
-    private void exitVistor() {
-        reentrantLock.lock();
+    private void exitVisitor() {
+        reentrantLockVisitor.lock();
         discoIsFull.signal();
-        reentrantLock.unlock();
+        reentrantLockVisitor.unlock();
     }
 
     /**
      *
      */
     private void enterRecordCompany() {
-        while (!containsRecordCompany) {
-            reentrantLock.lock();
-            if (canRecordCompanyEnter()) {
+        reentrantLockRC.lock();
+        if (canRecordCompanyEnter()) {
+            try {
                 containsRecordCompany = true;
+                rcInDisco.await();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                reentrantLockRC.unlock();
             }
         }
-        lockDisco();
-        containsRecordCompany = false;
-    }
-
-    /**
-     *
-     * @return
-     */
-    private boolean discoFull() {
-        return discoCounter == 20;
-    }
-
-    /**
-     *
-     * @return
-     */
-    private boolean canRecordCompanyEnter() {
-        return discoCounter <= 10;
     }
 
     /**
      *
      */
     private void exitRecordCompany() {
-        reentrantLock.unlock();
+        reentrantLockRC.lock();
         containsRecordCompany = false;
+        rcInDisco.signal();
+        reentrantLockRC.unlock();
     }
 
     /**
-     * 
+     * @return
+     */
+    private boolean discoFull() {
+        return discoCounter == 20 ;
+    }
+
+    /**
+     * @return
+     */
+    private boolean canRecordCompanyEnter() {
+        return discoCounter <= 10 && !containsRecordCompany;
+    }
+
+    /**
+     *
      */
     private void lockDisco() {
         try {
@@ -108,7 +119,7 @@ public class Disco {
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
-            reentrantLock.unlock();
+            reentrantLockVisitor.unlock();
         }
     }
 }
