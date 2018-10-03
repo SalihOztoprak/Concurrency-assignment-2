@@ -1,5 +1,7 @@
 package com.company;
 
+import java.util.Random;
+
 public class Person extends  Thread{
     private int personNumber;
     private Disco disco;
@@ -11,7 +13,17 @@ public class Person extends  Thread{
 
     @Override
     public void run() {
-        disco.enterDisco(this);
+        System.out.println("Someone entered: " + personNumber);
+        disco.enterDisco();
+        Random random = new Random();
+        int time = random.nextInt(2) + 10;
+        try {
+            sleep(time * 1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        disco.exitDisco();
+        System.out.println("Someone left: " + personNumber);
     }
 
     @Override

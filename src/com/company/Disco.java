@@ -10,26 +10,31 @@ public class Disco {
     private int discoCounter;
     private boolean containsRecordCompany;
 
-    public void enterDisco(Object object) {
+    public void enterDisco() {
         Thread t = Thread.currentThread();
         if (t instanceof RecordCompany) {
-            enterRecordCompany((RecordCompany) object);
+            enterRecordCompany();
         } else {
             discoCounter++;
-            enterVistor((Person) object);
+            enterVistor();
         }
     }
 
     public void exitDisco() {
-
+        Thread t = Thread.currentThread();
+        if (t instanceof RecordCompany) {
+            exitRecordCompany();
+        } else {
+            discoCounter--;
+            exitVistor();
+        }
     }
 
 
-    private void enterVistor(Person person) {
+    private void enterVistor() {
         reentrantLock.lock();
         try {
-            while (discoContains(20)) {
-                System.out.println("Someone entered: " + person);
+            while (discoFull(20)) {
                 discoIsFull.await();
             }
         } catch (InterruptedException e) {
@@ -39,25 +44,30 @@ public class Disco {
         }
     }
 
-    private void exitVistor(Person person) {
-        System.out.println("Someone left: " + person);
+    private void exitVistor() {
+        reentrantLock.lock();
+        discoIsFull.signal();
+        reentrantLock.unlock();
     }
 
-    private void enterRecordCompany(RecordCompany recordCompany) {
-        while (discoContains(10) && !containsRecordCompany) {
+    private void enterRecordCompany() {
+        while (canRecordCompanyEnter(10) && !containsRecordCompany) {
             reentrantLock.lock();
-            System.out.println("Someone important entered: " + recordCompany);
             containsRecordCompany = true;
             lockDisco();
         }
     }
 
-    private boolean discoContains(int amount) {
+    private boolean discoFull(int amount) {
+        return discoCounter == amount;
+    }
+
+    private boolean canRecordCompanyEnter(int amount) {
         return discoCounter <= amount;
     }
 
-    private void exitRecordCompany(RecordCompany recordCompany) {
-        System.out.println("Someone important left: " + recordCompany);
+    private void exitRecordCompany() {
+        reentrantLock.unlock();
         containsRecordCompany = false;
     }
 
