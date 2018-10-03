@@ -1,7 +1,6 @@
 package com.company;
 
 public class RecordCompany extends Thread {
-    private String name;
     private int number;
     private Disco  disco;
 
