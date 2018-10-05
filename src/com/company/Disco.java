@@ -124,22 +124,9 @@ public class Disco {
     }
 
     /**
-     * @return
+     * @return a b
      */
     private boolean canRecordCompanyEnter() {
         return discoCounter <= (maxPeople / 2) && !containsRecordCompany && rcCounter < 3;
-    }
-
-    /**
-     *
-     */
-    private void lockDisco() {
-        try {
-            letVisitorEnter.await();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } finally {
-            reentrantLock.unlock();
-        }
     }
 }
