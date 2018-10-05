@@ -32,7 +32,7 @@ public class RecordCompany extends Thread {
 
     private void waitSomeTime(){
         Random random = new Random();
-        int time = random.nextInt(60) + 1;
+        int time = random.nextInt(10) + 1;
         try {
             sleep(time * 1000);
         } catch (InterruptedException e) {

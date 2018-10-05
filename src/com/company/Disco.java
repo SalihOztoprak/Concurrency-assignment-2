@@ -5,10 +5,9 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class Disco {
 
-    private ReentrantLock reentrantLockVisitor = new ReentrantLock();
-    private ReentrantLock reentrantLockRC = new ReentrantLock();
-    private Condition discoIsFull = reentrantLockVisitor.newCondition();
-    private Condition rcInDisco = reentrantLockRC.newCondition();
+    private ReentrantLock reentrantLock = new ReentrantLock();
+    private Condition letVisitorEnter = reentrantLock.newCondition();
+    private Condition letRcEnter = reentrantLock.newCondition();
 
     private int discoCounter = 0;
     private int maxPeople = 20;
@@ -28,10 +27,6 @@ public class Disco {
         System.out.println();
         System.out.println("Discocounter " + discoCounter);
         System.out.println("Do we have a recordcompany: " + containsRecordCompany);
-//        System.out.println();
-        if (discoCounter == 20){
-            rcCounter = 0;
-        }
     }
 
     /**
@@ -57,16 +52,17 @@ public class Disco {
      *
      */
     private void enterVisitor() {
-        reentrantLockVisitor.lock();
+        reentrantLock.lock();
         try {
-            while (!mayEnterDisco()) {
-                discoIsFull.await();
+            while (!canVisitorEnter()) {
+                letVisitorEnter.await();
             }
+
             discoCounter++;
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
-            reentrantLockVisitor.unlock();
+            reentrantLock.unlock();
         }
     }
 
@@ -74,29 +70,33 @@ public class Disco {
      *
      */
     private void exitVisitor() {
-        reentrantLockVisitor.lock();
+        reentrantLock.lock();
         discoCounter--;
-        discoIsFull.signal();
-        reentrantLockVisitor.unlock();
+        if (rcCounter == 0) {
+            letRcEnter.signalAll();
+        } else {
+            letVisitorEnter.signal();
+        }
+        reentrantLock.unlock();
     }
 
     /**
      *
      */
     private void enterRecordCompany() {
-        reentrantLockRC.lock();
+        reentrantLock.lock();
 
         try {
             while (!canRecordCompanyEnter()) {
-                rcInDisco.await();
+                letRcEnter.await();
             }
             rcCounter++;
             containsRecordCompany = true;
-            discoCounter += 10;
+            discoCounter++;
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
-            reentrantLockRC.unlock();
+            reentrantLock.unlock();
         }
     }
 
@@ -104,25 +104,30 @@ public class Disco {
      *
      */
     private void exitRecordCompany() {
-        reentrantLockRC.lock();
+        reentrantLock.lock();
         containsRecordCompany = false;
-        discoCounter -= (maxPeople/2);
-        rcInDisco.signal();
-        reentrantLockRC.unlock();
+        discoCounter--;
+        if (rcCounter == 3) {
+            letVisitorEnter.signalAll();
+            rcCounter = 0;
+        } else {
+            letRcEnter.signal();
+        }
+        reentrantLock.unlock();
     }
 
     /**
      * @return
      */
-    private boolean mayEnterDisco() {
-        return discoCounter < maxPeople && !containsRecordCompany;
+    private boolean canVisitorEnter() {
+        return discoCounter < maxPeople && !containsRecordCompany || discoCounter < maxPeople && rcCounter < 3 && !containsRecordCompany;
     }
 
     /**
      * @return
      */
     private boolean canRecordCompanyEnter() {
-        return discoCounter <= (maxPeople/2) && !containsRecordCompany && rcCounter < 3;
+        return discoCounter <= (maxPeople / 2) && !containsRecordCompany && rcCounter < 3;
     }
 
     /**
@@ -130,11 +135,11 @@ public class Disco {
      */
     private void lockDisco() {
         try {
-            discoIsFull.await();
+            letVisitorEnter.await();
         } catch (InterruptedException e) {
             e.printStackTrace();
         } finally {
-            reentrantLockVisitor.unlock();
+            reentrantLock.unlock();
         }
     }
 }

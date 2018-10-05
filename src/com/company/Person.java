@@ -32,7 +32,7 @@ public class Person extends  Thread{
 
     private void waitSomeTime(){
         Random random = new Random();
-        int time = random.nextInt(60) + 1;
+        int time = random.nextInt(15) + 1;
         try {
             sleep(time * 1000);
         } catch (InterruptedException e) {
