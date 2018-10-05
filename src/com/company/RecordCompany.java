@@ -3,11 +3,11 @@ package com.company;
 import java.util.Random;
 
 public class RecordCompany extends Thread {
-    private  int number;
+    private int number;
     private Disco disco;
 
     public RecordCompany(int number, Disco disco) {
-        this.number = number+1;
+        this.number = number + 1;
         this.disco = disco;
     }
 
@@ -16,21 +16,30 @@ public class RecordCompany extends Thread {
         while (true) {
             waitSomeTime();
             disco.enterDisco();
-            System.out.println("Someone important entered: " + number);
+
+            System.out.println();
+            System.out.println("-----------------------------------------");
+            System.out.println(number + ") A Record Company entered");
+            System.out.println("-----------------------------------------");
+            System.out.println();
 
             waitSomeTime();
             disco.exitDisco();
-            System.out.println("Someone important left: " + number);
-//            number++;
+
+            System.out.println();
+            System.out.println("-----------------------------------------");
+            System.out.println(number + ") A Record Company left");
+            System.out.println("-----------------------------------------");
+            System.out.println();
         }
     }
 
     @Override
     public String toString() {
-        return "RecordCompany: "+ number;
+        return "RecordCompany: " + number;
     }
 
-    private void waitSomeTime(){
+    private void waitSomeTime() {
         Random random = new Random();
         int time = random.nextInt(10) + 1;
         try {

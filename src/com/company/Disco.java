@@ -24,9 +24,7 @@ public class Disco {
         } else {
             enterVisitor();
         }
-        System.out.println();
-        System.out.println("Discocounter " + discoCounter);
-        System.out.println("Do we have a recordcompany: " + containsRecordCompany);
+        System.out.println("Persons in disco: " + discoCounter);
     }
 
     /**
@@ -44,8 +42,7 @@ public class Disco {
                 exitRecordCompany();
             }
         }
-        System.out.println();
-        System.out.println("Discocounter " + discoCounter);
+        System.out.println("Persons in disco: " + discoCounter);
     }
 
     /**
@@ -124,7 +121,7 @@ public class Disco {
     }
 
     /**
-     * @return a b
+     * @return
      */
     private boolean canRecordCompanyEnter() {
         return discoCounter <= (maxPeople / 2) && !containsRecordCompany && rcCounter < 3;
