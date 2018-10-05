@@ -37,13 +37,13 @@ public class Disco {
     /**
      *
      */
-    public void exitDisco(Object object) {
+    public void exitDisco() {
         Thread t = Thread.currentThread();
 
         if (t instanceof RecordCompany) {
             exitRecordCompany();
         } else {
-            if (object instanceof Person) {
+            if (t instanceof Person) {
                 exitVisitor();
             } else {
                 exitRecordCompany();

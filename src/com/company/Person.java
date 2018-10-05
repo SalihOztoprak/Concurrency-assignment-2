@@ -19,7 +19,7 @@ public class Person extends  Thread{
             System.out.println("Person : " + personNumber+" entered");
 
             waitSomeTime();
-            disco.exitDisco(this);
+            disco.exitDisco();
             System.out.println("Person : " + personNumber+" left");
 //            personNumber++;
         }

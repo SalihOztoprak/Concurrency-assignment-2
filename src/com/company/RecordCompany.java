@@ -19,7 +19,7 @@ public class RecordCompany extends Thread {
             System.out.println("Someone important entered: " + number);
 
             waitSomeTime();
-            disco.exitDisco(this);
+            disco.exitDisco();
             System.out.println("Someone important left: " + number);
 //            number++;
         }
