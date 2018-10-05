@@ -2,14 +2,19 @@ package com.company;
 
 import java.util.Random;
 
-public class Person extends Thread {
+public class Visitor extends Thread {
     private int personNumber;
     private Disco disco;
 
-    public Person(int number, Disco disco) {
+    /**
+     * @param number the number of the person
+     * @param disco the disco
+     */
+    public Visitor(int number, Disco disco) {
         this.personNumber = number + 1;
         this.disco = disco;
     }
+
 
     @Override
     public void run() {
@@ -23,8 +28,8 @@ public class Person extends Thread {
             System.out.println("-----------------------------------------");
             System.out.println();
 
-            waitSomeTime();
             disco.exitDisco();
+            waitSomeTime();
 
             System.out.println();
             System.out.println("-----------------------------------------");
@@ -32,11 +37,6 @@ public class Person extends Thread {
             System.out.println("-----------------------------------------");
             System.out.println();
         }
-    }
-
-    @Override
-    public String toString() {
-        return "Person: " + personNumber;
     }
 
     private void waitSomeTime() {

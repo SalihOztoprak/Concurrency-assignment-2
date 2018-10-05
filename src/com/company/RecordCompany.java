@@ -34,10 +34,6 @@ public class RecordCompany extends Thread {
         }
     }
 
-    @Override
-    public String toString() {
-        return "RecordCompany: " + number;
-    }
 
     private void waitSomeTime() {
         Random random = new Random();
@@ -48,4 +44,6 @@ public class RecordCompany extends Thread {
             e.printStackTrace();
         }
     }
+
+
 }

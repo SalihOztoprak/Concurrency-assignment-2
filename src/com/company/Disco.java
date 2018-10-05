@@ -15,7 +15,7 @@ public class Disco {
     private int rcCounter;
 
     /**
-     *
+     * Let the a person enter, check if it is a visitor or a record company.
      */
     public void enterDisco() {
         Thread t = Thread.currentThread();
@@ -28,7 +28,7 @@ public class Disco {
     }
 
     /**
-     *
+     * Let the person leave, check if it is a visitor or a record company.
      */
     public void exitDisco() {
         Thread t = Thread.currentThread();
@@ -36,17 +36,13 @@ public class Disco {
         if (t instanceof RecordCompany) {
             exitRecordCompany();
         } else {
-            if (t instanceof Person) {
-                exitVisitor();
-            } else {
-                exitRecordCompany();
-            }
+            exitVisitor();
         }
         System.out.println("Persons in disco: " + discoCounter);
     }
 
     /**
-     *
+     * The visitor enters the disco.
      */
     private void enterVisitor() {
         reentrantLock.lock();
@@ -54,7 +50,8 @@ public class Disco {
             while (!canVisitorEnter()) {
                 letVisitorEnter.await();
             }
-
+            assert discoCounter < maxPeople : " The visitors may not enter, the disco is full!";
+            assert !containsRecordCompany : "The visitor may not enter, there is still a record guy in the club";
             discoCounter++;
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -64,7 +61,7 @@ public class Disco {
     }
 
     /**
-     *
+     * The visitor exits the disco
      */
     private void exitVisitor() {
         reentrantLock.lock();
@@ -78,7 +75,7 @@ public class Disco {
     }
 
     /**
-     *
+     * The record company guy is entering the disco.
      */
     private void enterRecordCompany() {
         reentrantLock.lock();
@@ -87,6 +84,8 @@ public class Disco {
             while (!canRecordCompanyEnter()) {
                 letRcEnter.await();
             }
+            assert !containsRecordCompany : "The record guy cannot enter the disco, there is one already in!";
+            assert discoCounter<= (maxPeople /2) : "The disco is to busy to enter ";
             rcCounter++;
             containsRecordCompany = true;
             discoCounter++;
@@ -98,7 +97,7 @@ public class Disco {
     }
 
     /**
-     *
+     * The record company guy is leaving.
      */
     private void exitRecordCompany() {
         reentrantLock.lock();
@@ -114,6 +113,7 @@ public class Disco {
     }
 
     /**
+     * Check if the visitor can enter.
      * @return
      */
     private boolean canVisitorEnter() {
@@ -121,6 +121,7 @@ public class Disco {
     }
 
     /**
+     * check if the visitor can enter.
      * @return
      */
     private boolean canRecordCompanyEnter() {
