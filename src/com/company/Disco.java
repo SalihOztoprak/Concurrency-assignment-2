@@ -10,9 +10,10 @@ public class Disco {
     private Condition discoIsFull = reentrantLockVisitor.newCondition();
     private Condition rcInDisco = reentrantLockRC.newCondition();
 
-    private static int discoCounter;
-    private static boolean containsRecordCompany;
-    private static int rcCounter;
+    private int discoCounter = 0;
+    private int maxPeople = 20;
+    private boolean containsRecordCompany;
+    private int rcCounter;
 
     /**
      *
@@ -105,7 +106,7 @@ public class Disco {
     private void exitRecordCompany() {
         reentrantLockRC.lock();
         containsRecordCompany = false;
-        discoCounter -= 10;
+        discoCounter -= (maxPeople/2);
         rcInDisco.signal();
         reentrantLockRC.unlock();
     }
@@ -114,14 +115,14 @@ public class Disco {
      * @return
      */
     private boolean mayEnterDisco() {
-        return discoCounter < 20 && !containsRecordCompany;
+        return discoCounter < maxPeople && !containsRecordCompany;
     }
 
     /**
      * @return
      */
     private boolean canRecordCompanyEnter() {
-        return discoCounter <= 10 && !containsRecordCompany && rcCounter < 3;
+        return discoCounter <= (maxPeople/2) && !containsRecordCompany && rcCounter < 3;
     }
 
     /**
